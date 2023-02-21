@@ -25,9 +25,11 @@
     <![endif]-->
     <p>Image... <img src="arrow_left.png" /></p>        
     <p>hello 3</p>
+    <button onclick="updateData()">Click me</button> 
     <div id="myData"></div>
         <script>
-        fetch('data.json')
+          function updateData(){
+            fetch('data.json?ver=' + Date.now())
             .then(function (response) {
                 return response.json();
             })
@@ -37,8 +39,11 @@
             .catch(function (err) {
                 console.log('error: ' + err);
             });
+          }
+
         function appendData(data) {
             var mainContainer = document.getElementById("myData");
+            mainContainer.innerHTML = "";
             for (var i = 0; i < data.length; i++) {
                 var div = document.createElement("div");
                 div.innerHTML = 'Name: ' + data[i].firstName + ' ' + data[i].lastName;
