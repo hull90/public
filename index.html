@@ -30,6 +30,7 @@
         <script>
           function updateData(){
             fetch('data.json?ver=' + Date.now())
+            //fetch('data.json')
             .then(function (response) {
                 return response.json();
             })
