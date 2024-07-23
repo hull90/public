@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv='cache-control' content='no-cache'> 
+    <meta http-equiv='expires' content='0'> 
+    <meta http-equiv='pragma' content='no-cache'>
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />    
+    <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+    <!-- <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script> -->
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <p>Image... <img src="arrow_left.png" /></p>        
+    <p>hello 3</p>
+    <button onclick="updateData()">Click me</button> 
+    <div id="myData"></div>
+        <script>
+          function updateData(){
+            fetch('data.json?ver=' + Date.now())
+            //fetch('data.json')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                appendData(data);
+            })
+            .catch(function (err) {
+                console.log('error: ' + err);
+            });
+          }
+
+        function appendData(data) {
+            var mainContainer = document.getElementById("myData");
+            mainContainer.innerHTML = "";
+            for (var i = 0; i < data.length; i++) {
+                var div = document.createElement("div");
+                div.innerHTML = 'Name: ' + data[i].firstName + ' ' + data[i].lastName;
+                mainContainer.appendChild(div);
+            }
+        }
+    </script>
+    
+    <iframe src="https://player.vimeo.com/video/911827442?h=0e49bd72c6?autoplay=1#t=1m2s" width="640" height="564" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    
+    
+    
+  </body>
+</html>

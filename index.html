@@ -1,61 +1,136 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv='cache-control' content='no-cache'> 
-    <meta http-equiv='expires' content='0'> 
-    <meta http-equiv='pragma' content='no-cache'>
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />    
-    <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-    <!-- <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script> -->
-  </head>
-  <body>
-    <!--[if lt IE 7]>
-      <p class="browsehappy">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="#">upgrade your browser</a> to improve your experience.
-      </p>
-    <![endif]-->
-    <p>Image... <img src="arrow_left.png" /></p>        
-    <p>hello 3</p>
-    <button onclick="updateData()">Click me</button> 
-    <div id="myData"></div>
-        <script>
-          function updateData(){
-            fetch('data.json?ver=' + Date.now())
-            //fetch('data.json')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                appendData(data);
-            })
-            .catch(function (err) {
-                console.log('error: ' + err);
-            });
-          }
+<html lang="en">
 
-        function appendData(data) {
-            var mainContainer = document.getElementById("myData");
-            mainContainer.innerHTML = "";
-            for (var i = 0; i < data.length; i++) {
-                var div = document.createElement("div");
-                div.innerHTML = 'Name: ' + data[i].firstName + ' ' + data[i].lastName;
-                mainContainer.appendChild(div);
-            }
-        }
-    </script>
-    
-    <iframe src="https://player.vimeo.com/video/911827442?h=0e49bd72c6" width="640" height="564" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    
-    
-    
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>------</title>
+  <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"/> -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body class="bg-grey-100 px-10 font-sans leading-normal tracking-normal">
+  <div class="mx-auto max-w-2xl lg:text-center">
+    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Everything you need to deploy your app
+    </p>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Quis tellus eget adipiscing convallis sit sit eget aliquet quis.
+      Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.</p>
+  </div>
+  <div class="container pt-8 mx-auto" x-data="{ urls: [] }" x-init="urls = await fetchUrlList().then((data) => data )">
+    <input x-ref="searchField" x-model="search" x-on:keydown.window.prevent.slash="$refs.searchField.focus()"
+      placeholder="Search match" type="search"
+      class="block w-full bg-gray-200 focus:outline-none focus:bg-white focus:shadow text-gray-700 font-bold rounded-lg px-4 py-3 my-8" />
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <template x-for="(url, index) in urls" :key="index">
+        <div
+          class="flex items-center shadow hover:bg-indigo-100 hover:shadow-lg hover:rounded transition duration-150 ease-in-out transform hover:scale-105 p-3">
+          <div class="text-sm">
+            <p class="text-gray-900 leading-none" x-text="url.title"></p>
+            <p class="text-gray-600" x-text="url.date"></p>
+            <a :href="url.site" target="_blank">LINK</a>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+
+
+  <div class="container pt-8 mx-auto" x-data="_loadEmployees()">
+    <input x-ref="searchField" x-model="search" x-on:keydown.window.prevent.slash="$refs.searchField.focus()"
+      placeholder="Search for an employee..." type="search"
+      class="block w-full bg-gray-200 focus:outline-none focus:bg-white focus:shadow text-gray-700 font-bold rounded-lg px-4 py-3" />
+    <div class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <template x-for="item in filteredEmployees" :key="item">
+        <div
+          class="flex items-center shadow hover:bg-indigo-100 hover:shadow-lg hover:rounded transition duration-150 ease-in-out transform hover:scale-105 p-3">
+          <img class="w-10 h-10 rounded-full mr-4" :src="`${item.profile_image}`" />
+          <div class="text-sm">
+            <p class="text-gray-900 leading-none" x-text="item.employee_name + ' (' + item.employee_age + ')'"></p>
+            <p class="text-gray-600" x-text="'$'+item.employee_salary/100"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+
+  <script>
+    function _loadEmployees() {
+      return {
+        search: "",
+        myForData: sourceData,
+        get filteredEmployees() {
+          if (this.search === "") {
+            return this.myForData;
+          }
+          return this.myForData.filter((item) => {
+            return item.employee_name
+              .toLowerCase()
+              .includes(this.search.toLowerCase());
+          });
+        },
+      };
+    }
+
+    var sourceData = [
+      {
+        id: "1",
+        employee_name: "Tiger Nixon",
+        employee_salary: "320800",
+        employee_age: "61",
+        profile_image: "https://randomuser.me/api/portraits/men/1.jpg",
+      },
+      {
+        id: "2",
+        employee_name: "Garrett Winters",
+        employee_salary: "170750",
+        employee_age: "63",
+        profile_image: "https://randomuser.me/api/portraits/men/2.jpg",
+      },
+      {
+        id: "3",
+        employee_name: "Ashton Cox",
+        employee_salary: "86000",
+        employee_age: "66",
+        profile_image: "https://randomuser.me/api/portraits/men/3.jpg",
+      },
+      {
+        id: "4",
+        employee_name: "Cedric Kelly",
+        employee_salary: "433060",
+        employee_age: "22",
+        profile_image: "https://randomuser.me/api/portraits/men/4.jpg",
+      },
+      {
+        id: "5",
+        employee_name: "Airi Satou",
+        employee_salary: "162700",
+        employee_age: "33",
+        profile_image: "https://randomuser.me/api/portraits/women/5.jpg",
+      },
+      {
+        id: "6",
+        employee_name: "Brielle Williamson",
+        employee_salary: "372000",
+        employee_age: "61",
+        profile_image: "https://randomuser.me/api/portraits/women/6.jpg",
+      },
+      {
+        id: "7",
+        employee_name: "Herrod Chandler",
+        employee_salary: "137500",
+        employee_age: "59",
+        profile_image: "https://randomuser.me/api/portraits/men/7.jpg",
+      },
+    ];
+  </script>
+
+  <script src="https://tokinx.github.io/lately/lately.min.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+
 </html>
